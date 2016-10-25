@@ -5,20 +5,29 @@ namespace LearningAnimals
 {
     public class AI : MonoBehaviour
     {
+        private LayerMask m_LayerMask;
+        public LayerMask SetLayerMask
+        {
+            set
+            {
+                m_LayerMask = value;
+            }
+        }
+
         private int m_Joy = 0;
         public bool m_Grounded = false;
 
         [SerializeField]
-        private int m_MoveSpeed = 700;
+        private int m_MoveSpeed = 10;
         [SerializeField]
-        private int m_JumpForce = 50;
+        private int m_JumpForce = 2;
 
         private GameObject m_Target;
 
-        [SerializeField]
-        private LayerMask m_Layermask;
-
         private Rigidbody2D m_Rigidbody;
+
+        private int m_Direction = 1;
+        private int m_PreviousDirection = 1;
 
         void Start()
         {
@@ -26,26 +35,58 @@ namespace LearningAnimals
             m_Rigidbody = gameObject.GetComponent<Rigidbody2D>();
         }
 
-        void Update()
+        private void Update()
+        {
+            if (m_PreviousDirection != m_Direction)
+            {
+                m_PreviousDirection = m_Direction;
+
+                float velocity = m_Rigidbody.velocity.x;
+
+                if (m_Direction == -1)
+                {
+                    while (velocity > 0)
+                    {
+                        velocity -= 0.5f;
+                    }
+                }
+                else if (m_Direction == 1)
+                {
+                    while (velocity < 0)
+                    {
+                        velocity += 0.5f;
+                    }
+                }
+
+                m_Rigidbody.velocity = new Vector2(velocity, m_Rigidbody.velocity.y);
+                m_Rigidbody.angularVelocity = 0f;
+            }
+        }
+
+        void FixedUpdate()
         {
             if (Vector2.Distance(transform.position, m_Target.transform.position) > 2)
             {
                 if (m_Target.transform.position.x > transform.position.x)
                 {
-                    m_Rigidbody.AddForce(new Vector2(1, 0) * m_MoveSpeed * Time.deltaTime, ForceMode2D.Force);
+                    m_Rigidbody.AddForce(new Vector2(1, 0) * m_MoveSpeed, ForceMode2D.Force);
+
+                    m_Direction = 1;
                 }
                 else if (m_Target.transform.position.x < transform.position.x)
                 {
-                    m_Rigidbody.AddForce(new Vector2(1, 0) * -m_MoveSpeed * Time.deltaTime, ForceMode2D.Force);
+                    m_Rigidbody.AddForce(new Vector2(1, 0) * -m_MoveSpeed, ForceMode2D.Force);
+
+                    m_Direction = -1;
                 }
                 m_Joy++;
             }
 
-            m_Grounded = Physics2D.OverlapCircle(transform.position, 2, m_Layermask);
+            m_Grounded = Physics2D.OverlapCircle(transform.position, 2, m_LayerMask);
 
-            if(m_Joy >= 100 && m_Grounded)
+            if (m_Joy >= 100 && m_Grounded)
             {
-                m_Rigidbody.AddForce(new Vector2(0, 1) * m_JumpForce * Time.deltaTime, ForceMode2D.Impulse);
+                m_Rigidbody.AddForce(new Vector2(0, 1) * m_JumpForce, ForceMode2D.Impulse);
                 m_Joy = 0;
             }
         }
