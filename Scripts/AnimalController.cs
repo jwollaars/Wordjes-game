@@ -1,30 +1,39 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 namespace LearningAnimals
 {
     public class AnimalController : MonoBehaviour
     {
+        [SerializeField]
         private GameObject m_Animal;
-        private Vector3 m_Position = new Vector3(0f, 0f, 0f);
-
-        private SpriteRenderer m_SR;
+        [SerializeField]
+        private GameObject m_Toy;
 
         [SerializeField]
         private UIManager m_UIManager;
 
-        public void ChooseAnimal(GameObject GO)
+        private void Update()
         {
-            m_Animal = new GameObject();
-            m_Animal.AddComponent<Transform>();
-            m_SR = m_Animal.AddComponent<SpriteRenderer>();
-            m_SR.sprite = GO.GetComponent<Image>().sprite;
 
-            GameObject spawnedAnimal = (GameObject)Instantiate(m_Animal, m_Position, Quaternion.identity);
-            spawnedAnimal.AddComponent<BoxCollider2D>();
-            spawnedAnimal.AddComponent<Rigidbody2D>();
-            spawnedAnimal.AddComponent<AI>();
+        }
+
+        public void ChooseAnimal(Image image)
+        {
+            GameObject GO = new GameObject();
+            GO.name = image.name.Substring(8);
+            GO.transform.position = new Vector3(0f, 0f, 0f);
+            GO.transform.rotation = Quaternion.identity;
+            GO.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+
+            GO.AddComponent<SpriteRenderer>();
+            GO.GetComponent<SpriteRenderer>().sprite = image.sprite;
+
+            GO.AddComponent<BoxCollider2D>();
+            GO.AddComponent<Rigidbody2D>();
+            GO.AddComponent<AI>();
+
+            m_Animal = GO;
 
             m_UIManager.GetHUD[0].SetActive(false);
         }
