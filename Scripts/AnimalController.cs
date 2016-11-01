@@ -19,7 +19,7 @@ namespace LearningAnimals
 
         private void Update()
         {
-            m_Toy.transform.position = m_Camera.ScreenToWorldPoint(Input.mousePosition);
+            //m_Toy.transform.position = m_Camera.ScreenToWorldPoint(Input.mousePosition);
         }
 
         public void ChooseAnimal(Image image)
