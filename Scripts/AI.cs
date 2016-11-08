@@ -29,6 +29,15 @@ namespace LearningAnimals
         private int m_Direction = 1;
         private int m_PreviousDirection = 1;
 
+        private SpriteRenderer m_SpriteRenderer;
+
+        private void Awake()
+        {
+            m_PreviousDirection = m_Direction;
+
+            m_SpriteRenderer = GetComponent<SpriteRenderer>();
+        }
+
         void Start()
         {
             m_Target = GameObject.Find("Toy");
@@ -41,43 +50,41 @@ namespace LearningAnimals
             {
                 m_PreviousDirection = m_Direction;
 
-                float velocity = m_Rigidbody.velocity.x;
-
-                if (m_Direction == -1)
+                if (m_SpriteRenderer != null)
                 {
-                    while (velocity > 0)
+                    if (m_Direction == -1)
                     {
-                        velocity -= 0.5f;
+                        m_SpriteRenderer.flipX = false;
+                    }
+                    else if (m_Direction == 1)
+                    {
+                        m_SpriteRenderer.flipX = true;
                     }
                 }
-                else if (m_Direction == 1)
-                {
-                    while (velocity < 0)
-                    {
-                        velocity += 0.5f;
-                    }
-                }
-
-                m_Rigidbody.velocity = new Vector2(velocity, m_Rigidbody.velocity.y);
-                m_Rigidbody.angularVelocity = 0f;
             }
         }
 
         void FixedUpdate()
         {
-            if (Vector2.Distance(transform.position, m_Target.transform.position) > 2)
+            if (Vector2.Distance(transform.position, m_Target.transform.position) > 2 && m_Grounded)
             {
                 if (m_Target.transform.position.x > transform.position.x)
                 {
                     m_Rigidbody.AddForce(new Vector2(1, 0) * m_MoveSpeed, ForceMode2D.Force);
 
-                    m_Direction = 1;
+                    if (m_Direction != 1)
+                    {
+                        m_Direction = 1;
+                    }
                 }
                 else if (m_Target.transform.position.x < transform.position.x)
                 {
                     m_Rigidbody.AddForce(new Vector2(1, 0) * -m_MoveSpeed, ForceMode2D.Force);
 
-                    m_Direction = -1;
+                    if (m_Direction != -1)
+                    {
+                        m_Direction = -1;
+                    }
                 }
                 m_Joy++;
             }
