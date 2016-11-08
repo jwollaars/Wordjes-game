@@ -30,6 +30,8 @@ namespace LearningAnimals
         private int m_PreviousDirection = 1;
 
         private SpriteRenderer m_SpriteRenderer;
+        
+        public AudioClip m_AudioClip;
 
         private void Awake()
         {
@@ -66,6 +68,16 @@ namespace LearningAnimals
 
         void FixedUpdate()
         {
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, -Vector2.up, (GetComponent<BoxCollider2D>().size.y/2), m_LayerMask);
+            if (hit.collider != null)
+            {
+                m_Grounded = true;
+            }
+            else
+            {
+                m_Grounded = false;
+            }
+
             if (Vector2.Distance(transform.position, m_Target.transform.position) > 2 && m_Grounded)
             {
                 if (m_Target.transform.position.x > transform.position.x)
@@ -89,13 +101,18 @@ namespace LearningAnimals
                 m_Joy++;
             }
 
-            m_Grounded = Physics2D.OverlapCircle(transform.position, 2, m_LayerMask);
-
             if (m_Joy >= 100 && m_Grounded)
             {
                 m_Rigidbody.AddForce(new Vector2(0, 1) * m_JumpForce, ForceMode2D.Impulse);
                 m_Joy = 0;
             }
+        }
+
+        public void PlayAnimalSound()
+        {
+            GetComponent<AudioSource>().clip = m_AudioClip;
+            GetComponent<AudioSource>().Play();
+            //GetComponent<AudioSource>().PlayOneShot(m_AudioClip, 1);
         }
     }
 }

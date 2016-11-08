@@ -19,37 +19,49 @@ namespace LearningAnimals
         [SerializeField]
         private PhysicsMaterial2D m_Bounce;
         [SerializeField]
-        private List<Image> m_Images;
+        private Sprites m_Sprites = new Sprites();
+        [SerializeField]
+        private List<AudioClip> m_AudioClips = new List<AudioClip>();
 
         [SerializeField]
         private EventSystem m_EventSystem;
 
-        public void ChooseAnimal(Image image)
+        public void ChooseAnimal(Sprite sprite)
         {
-            if (m_Images.Count > 0)
+            if (m_Sprites.availableSprites.Count > 0)
             {
                 GameObject GO = new GameObject();
                 GO.tag = "Throwable";
                 GO.layer = LayerMask.NameToLayer("Animal");
-                GO.name = image.name.Substring(8);
+                GO.name = sprite.name.Substring(8);
                 GO.transform.position = new Vector3(0f, 0f, 0f);
                 GO.transform.rotation = Quaternion.identity;
                 GO.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
 
                 GO.AddComponent<SpriteRenderer>();
-                GO.GetComponent<SpriteRenderer>().sprite = image.sprite;
+                GO.GetComponent<SpriteRenderer>().sprite = sprite;
 
                 GO.AddComponent<BoxCollider2D>();
                 GO.GetComponent<BoxCollider2D>().sharedMaterial = m_Bounce;
 
+                GO.AddComponent<CircleCollider2D>();
+                GO.GetComponent<CircleCollider2D>().isTrigger = true;
+                GO.GetComponent<CircleCollider2D>().radius = 2;
+
                 GO.AddComponent<Rigidbody2D>();
                 GO.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
 
+                GO.AddComponent<AudioSource>();
+                GO.GetComponent<AudioSource>().loop = false;
+
                 GO.AddComponent<AI>();
                 GO.GetComponent<AI>().SetLayerMask = m_LayerMask;
+                GO.GetComponent<AI>().m_AudioClip = m_AudioClips[1];
 
                 m_Animals.Add(GO);
-                m_Images.Remove(image);
+
+                m_Sprites.unavailableSprites.Add(sprite);
+                m_Sprites.availableSprites.Remove(sprite);
             }
         }
 
@@ -57,34 +69,60 @@ namespace LearningAnimals
         {
             if (!m_EventSystem.IsPointerOverGameObject())
             {
-                if (m_Images.Count > 0)
+                if (m_Sprites.availableSprites.Count > 0)
                 {
-                    int randomAnimal = Random.Range(0, m_Images.Count);
+                    int randomAnimal = Random.Range(0, m_Sprites.availableSprites.Count);
 
                     GameObject GO = new GameObject();
                     GO.tag = "Throwable";
                     GO.layer = LayerMask.NameToLayer("Animal");
-                    GO.name = m_Images[randomAnimal].name.Substring(8);
+                    GO.name = m_Sprites.availableSprites[randomAnimal].name.Substring(8);
                     GO.transform.position = pos;
                     GO.transform.rotation = Quaternion.identity;
                     GO.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
 
                     GO.AddComponent<SpriteRenderer>();
-                    GO.GetComponent<SpriteRenderer>().sprite = m_Images[randomAnimal].sprite;
+                    GO.GetComponent<SpriteRenderer>().sprite = m_Sprites.availableSprites[randomAnimal];
 
                     GO.AddComponent<BoxCollider2D>();
                     GO.GetComponent<BoxCollider2D>().sharedMaterial = m_Bounce;
 
+                    GO.AddComponent<CircleCollider2D>();
+                    GO.GetComponent<CircleCollider2D>().isTrigger = true;
+                    GO.GetComponent<CircleCollider2D>().radius = 2;
+
                     GO.AddComponent<Rigidbody2D>();
                     GO.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
 
+                    GO.AddComponent<AudioSource>();
+                    GO.GetComponent<AudioSource>().loop = false;
+
                     GO.AddComponent<AI>();
                     GO.GetComponent<AI>().SetLayerMask = m_LayerMask;
+                    GO.GetComponent<AI>().m_AudioClip = m_AudioClips[randomAnimal];
 
                     m_Animals.Add(GO);
-                    m_Images.Remove(m_Images[randomAnimal]);
+                    
+                    m_Sprites.unavailableSprites.Add(m_Sprites.availableSprites[randomAnimal]);
+                    m_Sprites.availableSprites.Remove(m_Sprites.availableSprites[randomAnimal]);
+
+                    if (m_Animals.Count > 6)
+                    {
+                        GameObject firstToDestroy = m_Animals[0];
+                        m_Sprites.availableSprites.Add(m_Animals[0].GetComponent<SpriteRenderer>().sprite);
+                        m_Sprites.unavailableSprites.Remove(m_Animals[0].GetComponent<SpriteRenderer>().sprite);
+                        m_Animals.Remove(m_Animals[0]);
+                        Destroy(firstToDestroy);
+                    }
                 }
             }
+        }
+
+        [System.Serializable]
+        private struct Sprites
+        {
+            public List<Sprite> availableSprites;
+            public List<Sprite> unavailableSprites;
         }
     }
 }
