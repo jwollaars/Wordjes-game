@@ -22,7 +22,7 @@ namespace LearningAnimals
         [SerializeField]
         private int m_JumpForce = 2;
 
-        private GameObject m_Target;
+        //private GameObject m_Target;
 
         private Rigidbody2D m_Rigidbody;
 
@@ -42,7 +42,7 @@ namespace LearningAnimals
 
         void Start()
         {
-            m_Target = GameObject.Find("Toy");
+            //m_Target = GameObject.Find("Toy");
             m_Rigidbody = gameObject.GetComponent<Rigidbody2D>();
         }
 
@@ -78,28 +78,30 @@ namespace LearningAnimals
                 m_Grounded = false;
             }
 
-            if (Vector2.Distance(transform.position, m_Target.transform.position) > 2 && m_Grounded)
-            {
-                if (m_Target.transform.position.x > transform.position.x)
-                {
-                    m_Rigidbody.AddForce(new Vector2(1, 0) * m_MoveSpeed, ForceMode2D.Force);
+            //if (Vector2.Distance(transform.position, m_Target.transform.position) > 2 && m_Grounded)
+            //{
+            //    if (m_Target.transform.position.x > transform.position.x)
+            //    {
+            //        m_Rigidbody.AddForce(new Vector2(1, 0) * m_MoveSpeed, ForceMode2D.Force);
 
-                    if (m_Direction != 1)
-                    {
-                        m_Direction = 1;
-                    }
-                }
-                else if (m_Target.transform.position.x < transform.position.x)
-                {
-                    m_Rigidbody.AddForce(new Vector2(1, 0) * -m_MoveSpeed, ForceMode2D.Force);
+            //        if (m_Direction != 1)
+            //        {
+            //            m_Direction = 1;
+            //        }
+            //    }
+            //    else if (m_Target.transform.position.x < transform.position.x)
+            //    {
+            //        m_Rigidbody.AddForce(new Vector2(1, 0) * -m_MoveSpeed, ForceMode2D.Force);
 
-                    if (m_Direction != -1)
-                    {
-                        m_Direction = -1;
-                    }
-                }
-                m_Joy++;
-            }
+            //        if (m_Direction != -1)
+            //        {
+            //            m_Direction = -1;
+            //        }
+            //    }
+            //    m_Joy++;
+            //}
+
+            m_Joy++;
 
             if (m_Joy >= 100 && m_Grounded)
             {
@@ -110,9 +112,7 @@ namespace LearningAnimals
 
         public void PlayAnimalSound()
         {
-            GetComponent<AudioSource>().clip = m_AudioClip;
-            GetComponent<AudioSource>().Play();
-            //GetComponent<AudioSource>().PlayOneShot(m_AudioClip, 1);
+            GetComponent<AudioSource>().PlayOneShot(m_AudioClip);
         }
     }
 }

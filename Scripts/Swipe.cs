@@ -61,6 +61,8 @@ namespace LearningAnimals
 
                             m_SelectedObj.GetComponent<Rigidbody2D>().AddForce(normalDir * m_Force * Time.deltaTime, ForceMode2D.Impulse);
 
+                            m_SelectedObj.GetComponent<AI>().PlayAnimalSound();
+
                             m_SelectedObj = null;
                         }
 
@@ -71,7 +73,6 @@ namespace LearningAnimals
                                 if (m_SelectedObj.GetComponent<AI>().m_Grounded)
                                 {
                                     m_SelectedObj.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 1) * 4, ForceMode2D.Impulse);
-                                    m_SelectedObj.GetComponent<AI>().PlayAnimalSound();
                                     m_SelectedObj = null;
                                 }
                             }
@@ -132,7 +133,6 @@ namespace LearningAnimals
                                     if (m_SelectedObj.GetComponent<AI>().m_Grounded)
                                     {
                                         m_SelectedObj.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 1) * 4, ForceMode2D.Impulse);
-                                        m_SelectedObj.GetComponent<AI>().PlayAnimalSound();
                                         m_SelectedObj = null;
                                     }
                                 }
